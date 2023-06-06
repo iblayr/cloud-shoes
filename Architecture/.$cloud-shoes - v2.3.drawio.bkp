@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-06-06T22:01:42.148Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="o6vPZYv52kptYYN5dotX" version="21.2.8" type="device">
+<mxfile host="Electron" modified="2023-06-06T22:00:51.000Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="6VV5s1ODjwoOFRA6wZeT" version="21.2.8" type="device">
   <diagram name="Cloud Shoes" id="-37fiKzTfTFrvlBXJHoI">
-    <mxGraphModel dx="2182" dy="1262" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="859" dy="497" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -137,10 +137,10 @@
           <mxGeometry x="488.5999999999999" y="567" width="85.4" height="19" as="geometry" />
         </mxCell>
         <mxCell id="sxxNK6MvzeQGFof8nIvv-4" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Virtual_Networks.svg;" vertex="1" parent="iRO7OTy0QqycGShimGxW-130">
-          <mxGeometry x="-20.25" y="358" width="67" height="40" as="geometry" />
+          <mxGeometry x="-20.25" y="348" width="67" height="40" as="geometry" />
         </mxCell>
         <mxCell id="sxxNK6MvzeQGFof8nIvv-5" value="VNET-SPOKE02&lt;br&gt;10.0.2.0/16" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="iRO7OTy0QqycGShimGxW-130">
-          <mxGeometry x="-34" y="322" width="94.5" height="30" as="geometry" />
+          <mxGeometry x="-32" y="392" width="94.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="sxxNK6MvzeQGFof8nIvv-7" value="VNET-SPOKE01&lt;br&gt;10.0.1.0/16" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="iRO7OTy0QqycGShimGxW-130">
           <mxGeometry x="-34" y="-453" width="94.5" height="30" as="geometry" />
