@@ -20,7 +20,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_virtual_network" "hub" {
-    name                = "vnet-hub"
+    name                = "VNET-HUB"
     location            = var.location_vnet_hub
     resource_group_name = azurerm_resource_group.rg.name
     address_space       = ["10.0.0.0/16"]
@@ -31,18 +31,25 @@ resource "azurerm_subnet" "GatewaySubnet" {
     name                 = "GatewaySubnet"
     resource_group_name  = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.hub.name
+    address_prefixes     = ["10.0.240.0/24"]
+}
+
+resource "azurerm_subnet" "FirewallSubnet" {
+    name                 = "AzureFirewallSubnet"
+    resource_group_name  = azurerm_resource_group.rg.name
+    virtual_network_name = azurerm_virtual_network.hub.name
     address_prefixes     = ["10.0.250.0/24"]
 }
 
-resource "azurerm_subnet" "sub-hub" {
-    name                 = "sub-hub"
+resource "azurerm_subnet" "HubSubnet" {
+    name                 = "HubSubnet"
     resource_group_name  = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.hub.name
-    address_prefixes     = ["10.0.1.0/24"]
+    address_prefixes     = ["10.0.0.0/24"]
 }
 
 resource "azurerm_virtual_network" "spoke01" {
-    name                = "vnet-spoke01"
+    name                = "VNET-SPOKE01"
     location            = var.location_vnet_spoke01
     resource_group_name = azurerm_resource_group.rg.name
     address_space       = ["10.10.0.0/16"]
@@ -56,37 +63,37 @@ resource "azurerm_subnet" "AppGatewaySubnet" {
     address_prefixes     = ["10.10.250.0/24"]
 }
 
-resource "azurerm_subnet" "sub-frontend" {
-    name                 = "sub-frontend"
+resource "azurerm_subnet" "FrontEndSubnet" {
+    name                 = "FrontEndSubnet"
     resource_group_name  = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.spoke01.name
     address_prefixes     = ["10.10.1.0/24"]
 }
 
-resource "azurerm_subnet" "sub-backend" {
-    name                 = "sub-backend"
+resource "azurerm_subnet" "BackEndSubnet" {
+    name                 = "BackEndSubnet"
     resource_group_name  = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.spoke01.name
     address_prefixes     = ["10.10.2.0/24"]
 }
 
 resource "azurerm_virtual_network" "spoke02" {
-    name                = "vnet-spoke02"
+    name                = "VNET-SPOKE02"
     location            = var.location_vnet_spoke02
     resource_group_name = azurerm_resource_group.rg.name
     address_space       = ["10.20.0.0/16"]
 
 }
 
-resource "azurerm_subnet" "sub-database" {
-    name                 = "sub-database"
+resource "azurerm_subnet" "DatabaseSubnet" {
+    name                 = "DatabaseSubnet"
     resource_group_name  = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.spoke02.name
     address_prefixes     = ["10.20.1.0/24"]
 }
 
-resource "azurerm_subnet" "sub-integration" {
-    name                 = "sub-integration"
+resource "azurerm_subnet" "IntegrationSubnet" {
+    name                 = "IntegrationSubnet"
     resource_group_name  = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.spoke02.name
     address_prefixes     = ["10.20.2.0/24"]
@@ -99,62 +106,50 @@ resource "azurerm_network_security_group" "nsg-hub" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_hub_assc" {
-  subnet_id                 = azurerm_subnet.sub-hub.id
+  subnet_id                 = azurerm_subnet.HubSubnet.id
   network_security_group_id = azurerm_network_security_group.nsg-hub.id
 }
 
-resource "azurerm_network_security_group" "nsg-spoke01" {
-  name                = "nsg-spoke01"
+resource "azurerm_network_security_group" "nsg_FrontEnd" {
+  name                = "nsg_FrontEnd"
   location            = var.location_vnet_spoke01
   resource_group_name = azurerm_resource_group.rg.name
-
-  security_rule {
-    name                       = "Allow_HTTP_80"
-    priority                   = 300
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "10.10.1.4"
-  }
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg_spoke01_assc_front" {
-  subnet_id                 = azurerm_subnet.sub-frontend.id
-  network_security_group_id = azurerm_network_security_group.nsg-spoke01.id
+resource "azurerm_subnet_network_security_group_association" "nsg_front_assc" {
+  subnet_id                 = azurerm_subnet.FrontEndSubnet.id
+  network_security_group_id = azurerm_network_security_group.nsg_FrontEnd.id
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg_spoke01_assc_back" {
-  subnet_id                 = azurerm_subnet.sub-backend.id
-  network_security_group_id = azurerm_network_security_group.nsg-spoke01.id
+resource "azurerm_network_security_group" "nsg_BackEnd" {
+  name                = "nsg_BackEnd"
+  location            = var.location_vnet_spoke01
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
-resource "azurerm_network_security_group" "nsg-spoke02" {
-  name                = "nsg-spoke02"
+resource "azurerm_subnet_network_security_group_association" "nsg_back_assc" {
+  subnet_id                 = azurerm_subnet.BackEndSubnet.id
+  network_security_group_id = azurerm_network_security_group.nsg_BackEnd.id
+}
+
+resource "azurerm_network_security_group" "nsg_Database" {
+  name                = "nsg_Database"
   location            = var.location_vnet_spoke02
   resource_group_name = azurerm_resource_group.rg.name
-
-  security_rule {
-    name                       = "Allow_HTTP_80"
-    priority                   = 300
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefixes = ["10.20.1.4", "10.20.2.4"]
-  }
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg_spoke02_assc_data" {
-  subnet_id                 = azurerm_subnet.sub-database.id
-  network_security_group_id = azurerm_network_security_group.nsg-spoke02.id
+resource "azurerm_subnet_network_security_group_association" "nsg_database_assc" {
+  subnet_id                 = azurerm_subnet.DatabaseSubnet.id
+  network_security_group_id = azurerm_network_security_group.nsg_Database.id
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg_spoke02_assc_integra" {
-  subnet_id                 = azurerm_subnet.sub-integration.id
-  network_security_group_id = azurerm_network_security_group.nsg-spoke02.id
+resource "azurerm_network_security_group" "nsg_Integration" {
+  name                = "nsg_Integration"
+  location            = var.location_vnet_spoke02
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_subnet_network_security_group_association" "nsg_integration_assc" {
+  subnet_id                 = azurerm_subnet.IntegrationSubnet.id
+  network_security_group_id = azurerm_network_security_group.nsg_Integration.id
 }
